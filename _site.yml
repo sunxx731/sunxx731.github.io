@@ -1,0 +1,21 @@
+name: "Bixuan Sun"
+output_dir: "."
+navbar:
+  left:
+    - text: "Home"
+      href: index.html
+    - text: "Research"
+      href: research.html
+    - text: "Teaching"
+      href: teaching.html
+    - text: "Contact"
+      href: contact.html
+  right:
+    - icon: fa-envelope fa-lg
+      href: contact.html
+    - icon: fa-linkedin fa-lg
+      href: https://www.linkedin.com/in/bixuan-sun-2a700849/
+output:
+  html_document:
+    theme: paper
+    css: 'styles.css'

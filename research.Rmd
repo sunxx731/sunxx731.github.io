@@ -1,0 +1,35 @@
+---
+---
+
+## Publications
+1. **Sun, B.** (2018). [Heterogeneous direct rebound effect: Theory and evidence from the Energy Star program](https://www.sciencedirect.com/science/article/pii/S0140988317304176). Energy Economics, 69, 335-349.
+
+1. Damon, A., Glewwe, P. , Wisniewski, S. and **Sun, B.** (2018), What education policies and programmes affect learning and time in school in developing countries? A review of evaluations from 1990 to 2014. Rev Educ.. [doi:10.1002/rev3.3123](https://onlinelibrary.wiley.com/doi/abs/10.1002/rev3.3123)
+
+1. Damon, A., Glewwe, P., Wisniewski, S., & **Sun, B.** (2016). Education in Developing Countries-what Policies and Programmes Affect Learning and Time in School?. Expertgruppen f?r bist?ndsanalys (EBA). [ISBN:978-91-88143-12-9](https://www.oecd.org/derec/sweden/Rapport-Education-developing-countries.pdf).
+
+---
+
+## Working papers
+1. **Sun, Bixuan**; Apland, Jeffrey. "Optimal bus scheduling considering operating costs and emissions: a multiple objective, mixed integer programming framework". (review and resubmit)
+
+1. **Sun, Bixuan**. "Heterogeneous Impacts of Residential Solar Rebate Programs in the U.S.: A Machine Learning Perspective". (under review)
+
+1. Glewwe, Paul; Wisniewski, Suzanne; **Sun, Bixuan**. "Teachers in Developing Countries". (under review)
+
+1. **Sun, Bixuan**; Chan, Gabriel. "A Network-Based Automated Approach for Identifying Technological Spillovers with an Application in Solar Photovoltaics".
+
+1. **Sun, Bixuan**; Eryilmaz, Derya; Konidena, Rao. "Transparency in Long-Term Electric Demand Forecast: A Perspective on Regional Load Forecasting".
+
+1. **Sun, Bixuan**; [Miller, Steve](stevejmiller.com). "Market power and the transition to clean energy".
+
+1. [Miller, Steve](stevejmiller.com); **Sun, Bixuan**. "Measuring knowledge diversity and its effects".
+
+1. [Miller, Steve](stevejmiller.com); **Sun, Bixuan**. "Research portfolio diversity and breakthrough technologies in the renewable energy sector".
+
+---
+## Programming
+Apland, Jeffrey; **Sun, Bixuan**. A Multi-Period, Multiple Objective, Mixed Integer Programming, GAMS Model for Transit System Planning. AgEcon Search, Staff Paper [P19-3](https://ageconsearch.umn.edu/record/285068).
+
+
+
