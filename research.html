@@ -7,6 +7,7 @@
 <meta charset="utf-8" />
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
 
@@ -86,7 +87,6 @@ code {
 }
 img {
   max-width:100%;
-  height: auto;
 }
 .tabbed-pane {
   padding-top: 12px;
@@ -247,18 +247,6 @@ $(document).ready(function () {
 }
 </style>
 
-<script>
-$(document).ready(function () {
-  window.buildTabsets("TOC");
-});
-
-$(document).ready(function () {
-  $('.tabset-dropdown > .nav-tabs > li').click(function () {
-    $(this).parent().toggleClass('nav-tabs-open')
-  });
-});
-</script>
-
 <!-- code folding -->
 
 
@@ -328,23 +316,24 @@ $(document).ready(function () {
 <div id="publications" class="section level2">
 <h2>Publications</h2>
 <ol style="list-style-type: decimal">
+<li><p><strong>Sun, B.</strong>; Eryilmaz, D.; Konidena, R. “Transparency in Long-Term Electric Demand Forecast: A Perspective on Regional Load Forecasting”. IEEE Smart Grid Newsletter, <a href="https://smartgrid.ieee.org/newsletters/august-2019/transparency-in-long-term-electric-demand-forecast-a-perspective-on-regional-load-forecasting">August 2019</a>.</p></li>
+<li><p><strong>Sun, B.</strong>; Apland, J. “Optimal bus scheduling considering operating costs and emissions: a multiple objective, mixed integer programming framework”. Public Transport. (accepted for publication, forthcoming)</p></li>
 <li><p><strong>Sun, B.</strong> (2018). <a href="https://www.sciencedirect.com/science/article/pii/S0140988317304176">Heterogeneous direct rebound effect: Theory and evidence from the Energy Star program</a>. Energy Economics, 69, 335-349.</p></li>
-<li><p>Damon, A., Glewwe, P. , Wisniewski, S. and <strong>Sun, B.</strong> (2018), What education policies and programmes affect learning and time in school in developing countries? A review of evaluations from 1990 to 2014. Rev Educ.. <a href="https://onlinelibrary.wiley.com/doi/abs/10.1002/rev3.3123">doi:10.1002/rev3.3123</a></p></li>
-<li><p>Damon, A., Glewwe, P., Wisniewski, S., &amp; <strong>Sun, B.</strong> (2016). Education in Developing Countries-what Policies and Programmes Affect Learning and Time in School?. Expertgruppen för biståndsanalys (EBA). <a href="https://www.oecd.org/derec/sweden/Rapport-Education-developing-countries.pdf">ISBN:978-91-88143-12-9</a>.</p></li>
+<li><p>Damon, A., Glewwe, P. , Wisniewski, S. and <strong>Sun, B.</strong> (2019), What education policies and programmes affect learning and time in school in developing countries? A review of evaluations from 1990 to 2014. Review of Education, 7(2), 295-387.</p></li>
+<li><p>Damon, A., Glewwe, P., Wisniewski, S., &amp; <strong>Sun, B.</strong> (2016). Education in Developing Countries-what Policies and Programmes Affect Learning and Time in School?. Expertgruppen f?r bist?ndsanalys (EBA). <a href="https://www.oecd.org/derec/sweden/Rapport-Education-developing-countries.pdf">ISBN:978-91-88143-12-9</a>.</p></li>
 </ol>
 <hr />
 </div>
 <div id="working-papers" class="section level2">
 <h2>Working papers</h2>
 <ol style="list-style-type: decimal">
-<li><p><strong>Sun, Bixuan</strong>; Apland, Jeffrey. “Optimal bus scheduling considering operating costs and emissions: a multiple objective, mixed integer programming framework”. (review and resubmit)</p></li>
-<li><p><strong>Sun, Bixuan</strong>. “Heterogeneous Impacts of Residential Solar Rebate Programs in the U.S.: A Machine Learning Perspective”. (under review)</p></li>
-<li><p>Glewwe, Paul; Wisniewski, Suzanne; <strong>Sun, Bixuan</strong>. “Teachers in Developing Countries”. (under review)</p></li>
+<li><p>Bhandari, Vivek; Konidena, Rao; <strong>Sun, Bixuan</strong>. “Missing discourse on microgrids - the importance of Transmission and Distribution infrastructure”.</p></li>
+<li><p><strong>Sun, Bixuan</strong>. “Heterogeneous Impacts of Residential Solar Rebate Programs in the U.S.: A Machine Learning Perspective”.</p></li>
+<li><p>Glewwe, Paul; Wisniewski, Suzanne; <strong>Sun, Bixuan</strong>. “Teachers in Developing Countries”.</p></li>
 <li><p><strong>Sun, Bixuan</strong>; Chan, Gabriel. “A Network-Based Automated Approach for Identifying Technological Spillovers with an Application in Solar Photovoltaics”.</p></li>
-<li><p><strong>Sun, Bixuan</strong>; Eryilmaz, Derya; Konidena, Rao. “Transparency in Long-Term Electric Demand Forecast: A Perspective on Regional Load Forecasting”.</p></li>
-<li><p><strong>Sun, Bixuan</strong>; Miller, Steve. “Market power and the transition to clean energy”.</p></li>
-<li><p>Miller, Steve; <strong>Sun, Bixuan</strong>. “Measuring knowledge diversity and its effects”.</p></li>
-<li><p>Miller, Steve; <strong>Sun, Bixuan</strong>. “Research portfolio diversity and breakthrough technologies in the renewable energy sector”.</p></li>
+<li><p><strong>Sun, Bixuan</strong>; <a href="stevejmiller.com">Miller, Steve</a>. “Market power and the transition to clean energy”.</p></li>
+<li><p><a href="stevejmiller.com">Miller, Steve</a>; <strong>Sun, Bixuan</strong>. “Measuring knowledge diversity and its effects”.</p></li>
+<li><p><a href="stevejmiller.com">Miller, Steve</a>; <strong>Sun, Bixuan</strong>. “Research portfolio diversity and breakthrough technologies in the renewable energy sector”.</p></li>
 </ol>
 <hr />
 </div>
@@ -370,6 +359,23 @@ $(document).ready(function () {
 
 
 </script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
 
 <!-- dynamically load mathjax for compatibility with self-contained -->
 <script>
