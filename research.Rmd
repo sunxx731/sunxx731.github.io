@@ -1,3 +1,7 @@
+
+---
+---
+
 ## Publications
 1. **Sun, B.**; Eryilmaz, D.; Konidena, R. "Transparency in Long-Term Electric Demand Forecast: A Perspective on Regional Load Forecasting". IEEE Smart Grid Newsletter, [August 2019](https://smartgrid.ieee.org/newsletters/august-2019/transparency-in-long-term-electric-demand-forecast-a-perspective-on-regional-load-forecasting).
 
