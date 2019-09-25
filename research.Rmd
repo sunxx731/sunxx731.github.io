@@ -4,11 +4,11 @@
 ## Publications
 1. **Sun, B.**; Eryilmaz, D.; Konidena, R. "Transparency in Long-Term Electric Demand Forecast: A Perspective on Regional Load Forecasting". IEEE Smart Grid Newsletter, [August 2019](https://smartgrid.ieee.org/newsletters/august-2019/transparency-in-long-term-electric-demand-forecast-a-perspective-on-regional-load-forecasting).
 
-1. **Sun, B.**; Apland, J. "Optimal bus scheduling considering operating costs and emissions: a multiple objective, mixed integer programming framework". Public Transport, 11(2), 237-267.
+1. **Sun, B.**; Apland, J. "Optimal bus scheduling considering operating costs and emissions: a multiple objective, mixed integer programming framework". Public Transport, 11(2), [237-267](https://link.springer.com/article/10.1007/s12469-019-00199-9).
 
-1. **Sun, B.** (2018). Heterogeneous direct rebound effect: Theory and evidence from the Energy Star program. Energy Economics, 69, 335-349.
+1. **Sun, B.** (2018). Heterogeneous direct rebound effect: Theory and evidence from the Energy Star program. Energy Economics, 69, [335-349](https://www.sciencedirect.com/science/article/pii/S0140988317304176).
 
-1. Damon, A., Glewwe, P. , Wisniewski, S. and **Sun, B.** (2019), What education policies and programmes affect learning and time in school in developing countries? A review of evaluations from 1990 to 2014. Review of Education, 7(2), 295-387.
+1. Damon, A., Glewwe, P. , Wisniewski, S. and **Sun, B.** (2019), What education policies and programmes affect learning and time in school in developing countries? A review of evaluations from 1990 to 2014. Review of Education, 7(2), [295-387](https://onlinelibrary.wiley.com/doi/full/10.1002/rev3.3123).
 
 1. Damon, A., Glewwe, P., Wisniewski, S., & **Sun, B.** (2016). Education in Developing Countries-what Policies and Programmes Affect Learning and Time in School?. Expertgruppen for bistandsanalys (EBA). [ISBN:978-91-88143-12-9](https://www.oecd.org/derec/sweden/Rapport-Education-developing-countries.pdf).
 
@@ -16,6 +16,8 @@
 
 ## Working papers
 1. Bhandari, Vivek; Konidena, Rao; **Sun, Bixuan**. "Missing discourse on microgrids - the importance of Transmission and Distribution infrastructure".
+
+1. Eryilmaz, Derya; **Sun, Bixuan**. “Impacts of electric vehicle adoption on utility short and long term planning”
 
 1. **Sun, Bixuan**. "Heterogeneous Impacts of Residential Solar Rebate Programs in the U.S.: A Machine Learning Perspective". 
 
