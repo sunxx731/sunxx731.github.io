@@ -1,0 +1,453 @@
+---
+title: "A Tutorial on novelty and relevance metrics"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+**Author**: Bixuan Sun, Ph.D. (sunxx731@umn.edu)
+
+**Full paper**: Sun, Bixuan; Kolesnikov, Sergey; Goldstein, Anna; Chan, Gabriel. "A Dynamic Approach for Identifying Technological Breakthroughs with an Application in Solar Photovoltaics"
+
+## Overview
+
+This is R tutorial on how to (1) extract relevant patents from PatentsView for analysis; (2) build and tune topic model; (3) calculate novelty and relevance metrics; (4) additional analyses using novelty and relevance mmtrics. 
+
+
+## Step 1: Download relavant files and select patent sample
+Go to [PatentsView](https://www.patentsview.org/download/) and download the following files: (1) Data on granted patents: *patent.tsv*; (2) Current CPC classification data for all patents (applied retrospectively to all patents): *cpc_current.tsv*; (3) Detailed patent description text: *detail_desc_text.tsv* (provided upon request to contact@patentsview.org).
+
+Next, import *cpc_current.tsv* and *patent.tsv* into RStudio and select relevant patents for future analysis.
+
+
+```{r import, eval=F, echo=T}
+rm(list=ls())  #clear existing memory
+library('data.table') 
+root.direct = c("E:/USPTO/") #set root directory
+
+############# identify patents with Si related CPC classes #################
+cpc = fread(paste(root.direct, 'cpc_current.tsv', sep="")) #import cpc data file
+si.cpc = c("Y02E10/545","Y02E10/546","Y02E10/547", "Y02E10/548") #four specific CPC classes
+si.patent.ids = cpc[subgroup_id %in% si.cpc, ]$patent_id #patent numbers of Si related patents
+uniqueN(si.patent.ids) #number of Si related patents
+
+pats = fread(paste(root.direct, 'patent.tsv', sep="")) #import patent data file
+pats[,granted_year:=substr(date,1,4)] #create a variable of granted year
+si.pv.pats = pats[(id %in% si.patent.ids) & (granted_year<=2016) & (granted_year>=1976)] #information on Si related patents granted between 1976 and 2016
+nrow(si.pv.pats) #number of patents in the sample
+head(si.pv.pats) #preview of patent information
+write.csv(si.pv.pats, file =  paste(root.direct, 'silicon_patents.csv', sep=""), row.names = F) #export patent information as csv file
+
+```
+The datasets on patent full-texts are organized by year, therefore we need to import and screen for the si-related patent full-text by year. If there are patents with missing full-text from the database, we might need to manually add them to the dataset. 
+
+```{r, eval=FALSE, echo=T}
+################## import silicon PV patent text ################## 
+si.pv.text = fread(paste(root.direct, 'detail_desc_text/detail-desc-text-',1976,'.tsv', sep=""), nrows = 0)
+for (n in 1976:2016){
+  full.text = fread(paste(root.direct, 'detail_desc_text/detail-desc-text-',n,'.tsv', sep=""))
+  si.pv.text.1 = full.text[patent_id %in% si.pats$id]
+  
+  si.pv.text = rbind(si.pv.text, si.pv.text.1)
+}
+
+write.csv(si.pv.text, file =  paste(root.direct, 'silicon_patents_full_text.csv', sep=""), row.names = F)
+
+#Now check if there are missing patents in the full-text dataset
+full.text.pat.ids = si.pv.text$patent_id
+missing.ids = si.pats$id[!(si.pats$id %in% full.text.pat.ids)] #ids of the patents with missing full-text
+
+```
+
+
+## Step 2: Build topic model 
+In this step, we first construct the document-feature matrix for the topic model, then we use cross validation to determine the number of topics, finally we create the topic model and the resulting topic distribution matrix for the relevant patents.
+
+```{r, eval=FALSE, echo=T}
+rm(list=ls())
+library('data.table') 
+root.direct = c("E:/USPTO/")
+
+si.pv.text = fread(paste(root.direct, 'silicon_patents_full_text.csv', sep="")) #import full texts
+all.text = si.pv.text$detail_description_text #creating a vector of full texts
+corpus = tolower(all.text) #convert all texts to lower case
+```
+
+###2.1. Construct document-feature matrix
+```{r, eval=F,echo=T}
+library(quanteda)  #install package before use
+
+tokens = tokens(corpus, what = "word", 
+                remove_numbers = F, remove_punct = T,
+                remove_symbols = F, remove_hyphens = F)
+
+# perform stemming on tokens
+tokens = tokens_wordstem(tokens, language="english")
+
+# delete list of stopwords 
+stopwords("english") #quanteda built in stopword
+stoplist =fread(paste("E:/PATSTAT Data/", c("text_mining/stoplist.csv"), sep = ""))
+stoplist = unique(stoplist$stopwords)
+
+sw = unique(c(stopwords("english"),stoplist, "also","e.g", "can","includ","said","first","wherein","other","made","make", "later",  "copyright", "fig", "figur", "tabl", "description", "describ"))
+
+tokens = tokens_select(tokens, sw,  selection = "remove")
+
+# Create  bag-of-words mode
+tokens.dfm = dfm(tokens, tolower = FALSE)
+
+dfm = dfm_trim(tokens.dfm, min_termfreq = 10, termfreq_type="count") #set minimum term frequency to be 10
+dim(dfm) 
+
+##################### delete additional stopwords #######################
+terms = colnames(dfm)
+
+### delete single letter and number
+singles = terms[nchar(terms)==1] #44
+terms = terms[nchar(terms)!=1]
+
+#### delete two-letter
+doubles = terms[nchar(terms)==2] #911
+terms = terms[nchar(terms)!=2] 
+
+#### add some important two letter terms
+chemical = fread(paste("E:/PATSTAT Data/", c("text_mining/chemicals.csv"), sep = ""))
+A =c(singles, doubles)
+append.1 = A[A %in% c(tolower(chemical$terms),  c("ac","dc","o2","o3","s2","h2","n2","i2","ii","iv","vi"))]
+
+terms = c(terms, append.1)
+
+#terms with numbers
+C = terms[grep("[0-9][0-9][A-Za-z]",terms,perl = T)]
+D = terms[grep("[A-Za-z][0-9][0-9]",terms,perl = T)] #terms with number
+
+C[nchar(C)>=3 & nchar(C)<=9]
+D[nchar(D)<=4 & nchar(D)>=3]
+
+deleted.num = c(C[nchar(C)>=3 & nchar(C)<=9], D[nchar(D)<=4 & nchar(D)>=3])
+terms = terms[!(terms %in% deleted.num)]
+
+#delete all terms starting with purpose
+terms = terms[!(terms %in% terms[grep("purpose:",terms,perl=T)])]
+
+# remove terms with two-digit number or more
+E = unique(c(terms[grep("[0-9][0-9]",terms,perl = T)],terms[grep("[0-9],[0-9]",terms,perl = T)]
+             ,terms[grep("[0-9]-[0-9]",terms,perl = T)], terms[grep("[0-9]\\.[0-9]",terms,perl = T)]))
+E[grep("[A-Za-z]",E,perl = T)]
+terms = terms[!(terms %in% E[-grep("[A-Za-z]",E,perl = T)])] #keep the ones with letters
+
+
+# remove all units pf distance
+G = c("0.1m",
+      terms[grep("[0-9]mm",terms,perl = T)],
+      terms[grep("[0-9]mum",terms,perl = T)],
+      terms[grep("[0-9]mol",terms,perl = T)],
+      terms[grep("[0-9]cm",terms,perl = T)],
+      terms[grep("[0-9]nm",terms,perl = T)],
+      terms[grep("[0-9]â",terms,perl = T)],
+      terms[grep("[0-9]angstrom",terms,perl = T)])
+
+terms = terms[!(terms %in% G)]
+
+## trim the matrix
+dfm = dfm[,terms]
+dim(dfm) 
+
+save(dfm, file = paste(root.direct,c("dfm_min10_si_pv_full_text.Rdata"), sep=""))  #export the document-feature matrix
+```
+
+### 2.2. Cross validation to determine the number of topics 
+```{r, eval=F,echo=T}
+#install and import packages
+library("topicmodels")
+library("ggplot2")
+library("scales")
+library("ldatuning")
+load(paste(root.direct,c("dfm_min10_si_pv_full_text.Rdata"), sep="")) #import the saved document-feature matrix
+
+set.seed(123)
+
+dfm = dfm[which(rowSums(dfm) > 0),] #delete rows with zeros
+dtm = convert(dfm,to="topicmodels") #need to convert to document term matrix which can be used by topicmodels package
+dim(dtm)
+
+######## cross-validation, different numbers of topics ############
+result <- FindTopicsNumber(
+  dtm,
+  topics = c(75, 100, 125, 150, 175, 200, 225, 250, 275, 300),
+  metrics = c("Griffiths2004", "CaoJuan2009", "Arun2010", "Deveaud2014"),
+  method = "Gibbs",
+  control = list(seed = 77),
+  mc.cores = 2L,
+  verbose = TRUE
+)
+ 
+FindTopicsNumber_plot(result) #inspect graphic output to determine the optimal number of topics
+```
+ ![Figure 1. Cross validation on the number of topics](C:/Users/sunxx731/Google Drive/Innovation Spillover/@Analytics/USPTO/Public code/topic_model_CV.png)
+ 
+ 
+### 2.3. Build LDA topic model and calculate topic distribution matrix
+```{r, eval=F,echo=T}
+library("topicmodels")
+library("tidytext")
+library("tm")
+
+######################### fit LDA model #################################
+dfm = dfm[which(rowSums(dfm) > 0),] #delete rows with zeros
+dtm = convert(dfm,to="topicmodels") #need to convert to document term matrix which can be used by topicmodels package
+dim(dtm) # 3126 10399
+
+lda.model = LDA(dtm,k = 200, control = list(seed = 123),alpha = 0.1, beta = 0.01 , verbose=1) 
+save(lda.model, file = paste(root.direct,c("lda_si_pv_full_text_200_topics_min10.RDS"), sep=""))
+
+
+################# calculate topic distribution matrix ####################
+lda.matrix = posterior(lda.model,dfm)$topics
+dim(lda.matrix) 
+rownames(lda.matrix) = si.pv.text$patent_id #replace the matrix row names with patent numbers
+
+save(lda.matrix, file = paste(root.direct,c("topic_dist_si_pv_full_text_200_topics_min10.Rdata"), sep=""))
+```
+
+## Step 3: Calculate novelty and relevance metrics
+To calculate novelty and relevance metrics, we first obtain the average topic distribution for each year (annual field centroids), then write a function that calculates the 20-year novelty and relevance metrics for patents filed in a given year, finally create a dataset that includes the changes/slopes of novelty and relevance values, initial novelty and relevance values of each patent in the study period.
+
+### 3.1. Annual field centroids
+```{r, eval=F, echo=F}
+rm(list=ls())
+library('data.table') 
+library('ggplot2')
+root.direct = c("E:/USPTO/")
+si.pv.pats = fread(paste(root.direct, 'silicon_patents.csv', sep="")) #import si patent information from step 1
+load(paste(root.direct,c("topic_dist_si_pv_full_text_200_topics_min10.Rdata"), sep="")) #load lda.matrix from step 2.3
+
+####### write a function calculating the average topic probablities for the 200 topics, input: year 
+topic.dist = function(n){
+  ids = si.pv.pats[granted_year == n]$id
+  topic.dist = lda.matrix[as.character(ids),]
+  
+  avg.topic = data.table(colSums(topic.dist)/nrow(topic.dist))
+  avg.topic[,topic:=seq(1,200,1)]
+  setnames(avg.topic,"V1","avg_prob")
+  
+  return(avg.topic)
+}
+
+avg.topic = topic.dist(1990) #calculate the average topic distribution among patents granted in 1990
+
+###### Plot the top 10 topics of the 1990 centroid 
+ggplot(avg.topic[order(-avg_prob)][1:10], aes( reorder(topic, avg_prob), avg_prob)) +
+  geom_col(show.legend = FALSE) + 
+  labs(y=c("topics"),x=c("average probablity"), title=paste("Average topic distribution", n, sep = ",")) +  
+  ylim(0,0.2)+ coord_flip()+theme_gray()
+
+###### create a dataset on average topic distribution from 1977 to 2016
+centroids = topic.dist(1976)
+centroids[,year:=1976]
+for (n in 1977:2016){
+  centroids.1 = topic.dist(n)
+  centroids.1[,year:=n]
+  centroids = rbind(centroids,centroids.1)
+}
+write.csv(centroids, file = paste(root.direct,c("centriods_si_pv_full_text_200_topics.csv"),sep = ""), row.names = F)
+
+```
+
+### 3.2. Calculate novelty and relevance metrics 
+Write a function *distance.function(n)* where *n* is the granted year of the patents to be evaluated.
+```{r, eval=F, echo=F}
+centroids = fread(paste(root.direct,c("centriods_si_pv_full_text_200_topics.csv"),sep = ""))
+
+distance.function = function(j){
+  n = j-1 #begining year centroid
+  
+  distance.dt.1 = data.table(between.pats=integer(),relevance=numeric(),novelty=numeric(),ending_centroid_yr=integer(), granted_year=integer())
+  
+  # 20 ending centroids
+  for (m in (j+1):(j+20)){
+    from.node = centroids[year==n]$avg_prob #begining centroid
+    to.node = centroids[year==m]$avg_prob  #ending centroid
+    MP.vector = to.node-from.node
+    MP.dist = dist(rbind(as.vector(from.node),as.vector(to.node)))
+    
+    between.pats = si.pv.pats[granted_year==j,]$id
+    between.pats = between.pats[as.character(between.pats) %in% row.names(lda.matrix)]
+
+    between.pats.topics = lda.matrix[as.character(between.pats),]
+    
+    distance.dt = data.table(between.pats)
+    
+    for (i in 1:length(between.pats)){
+      begin.cited.vector = lda.matrix[as.character(between.pats[i]),] - from.node
+      
+      if (sum(abs(begin.cited.vector))!=0){
+        cosine = sum(MP.vector*begin.cited.vector)/(sqrt(sum(MP.vector*MP.vector)) * sqrt(sum(begin.cited.vector*begin.cited.vector)))
+        sine = sqrt(1-cosine^2)
+        
+        dist.begin.cited = dist(rbind(as.vector(from.node),as.vector(lda.matrix[as.character(between.pats[i]),])))
+        
+        distance.dt[i,relevance := (cosine*dist.begin.cited)] 
+        distance.dt[i,novelty := (sine*dist.begin.cited)] 
+        
+      } else{
+        distance.dt[i,relevance := 0]
+        distance.dt[i,novelty := 0]
+        
+      }
+      
+    }
+    
+    distance.dt[,ending_centroid_yr:=m]
+    distance.dt[,granted_year:=j]
+    
+    distance.dt[,relevance:=as.numeric(relevance)]
+    distance.dt[,novelty:=as.numeric(novelty)]
+    
+    distance.dt.1 = rbind(distance.dt.1,distance.dt)
+  }
+  setnames(distance.dt.1,"between.pats","id")
+  
+  
+  distance.dt.1 = distance.dt.1[order(id)]
+  distance.dt.1[,time_trend:=ending_centroid_yr-granted_year]
+  
+  return(distance.dt.1)
+  
+}
+
+## example: novelty and relevance metrics of patents granted in 1990
+j=1990 
+patent.distance = distance.function(j)
+head(patent.distance)
+
+```
+
+### 3.3. Calculate slopes of novelty and relevance for each patent
+Create a dataset that includes the changes/slopes of novelty and relevance values, initial novelty and relevance values of each patent in the study period. This dataset can be used for further qualitative validations.
+
+```{r, eval=F, echo=T}
+slope.dt.1 = data.table(id=as.character(),granted_year=as.integer(),initial_novelty=as.numeric(),initial_novelty_percentile=numeric(),
+                        initial_relevance=as.numeric(),initial_relevance_percentile=numeric(),
+                        novelty_slope=as.numeric(),relevance_slope=as.numeric(), 
+                        novelty_slope_first10=numeric(), relevance_slope_first10=numeric(),
+                        novelty_slope_last10=numeric(), relevance_slope_last10=numeric())
+
+for (k in 1977:1996){
+  patent.distance = distance.function(k)
+  between.ids = unique(patent.distance$id)
+  
+  #### calculate slope of novelty and relevance for each patent, between 1995 and 2005 #######
+  slope.dt = data.table(between.ids)
+  setnames(slope.dt,"id")
+  
+  slope.dt[,granted_year:=k]
+  
+  initial.novelty.vec = patent.distance[time_trend==1]$novelty
+  initial.relevance.vec = patent.distance[time_trend==1]$relevance
+  
+  
+  for (x in 1:length(between.ids)){
+    slope.dt[id==between.ids[x],initial_novelty:=100*patent.distance[id==between.ids[x] & time_trend==1]$novelty]
+    slope.dt[id==between.ids[x],initial_novelty_percentile:=length(initial.novelty.vec[initial.novelty.vec<patent.distance[id==between.ids[x] & time_trend==1]$novelty])/length(initial.novelty.vec)]
+    
+    slope.dt[id==between.ids[x],initial_relevance:=100*patent.distance[id==between.ids[x] & time_trend==1]$relevance]
+    slope.dt[id==between.ids[x],initial_relevance_percentile:=length(initial.relevance.vec[initial.relevance.vec<patent.distance[id==between.ids[x] & time_trend==1]$relevance])/length(initial.relevance.vec)]
+    
+    
+    
+    slope.dt[id==between.ids[x],novelty_slope:=coef(lm((100*novelty) ~ time_trend,data = patent.distance[id==between.ids[x]]))[2]]
+    slope.dt[id==between.ids[x],relevance_slope:=coef(lm((100*relevance) ~ time_trend,data = patent.distance[id==between.ids[x]]))[2]]
+    
+    slope.dt[id==between.ids[x],novelty_slope_first10:=coef(lm((100*novelty) ~ time_trend,data = patent.distance[id==between.ids[x]][1:10]))[2]]
+    slope.dt[id==between.ids[x],relevance_slope_first10:=coef(lm((100*relevance) ~ time_trend,data = patent.distance[id==between.ids[x]][1:10]))[2]]
+    
+    slope.dt[id==between.ids[x],novelty_slope_last10:=coef(lm((100*novelty) ~ time_trend,data = patent.distance[id==between.ids[x]][10:20]))[2]]
+    slope.dt[id==between.ids[x],relevance_slope_last10:=coef(lm((100*relevance) ~ time_trend,data = patent.distance[id==between.ids[x]][10:20]))[2]]
+    
+  }
+  
+  slope.dt.1 = rbind(slope.dt.1,slope.dt)
+}
+
+slope.dt.1
+write.csv(slope.dt.1, file = paste(root.direct,c("slope_1977-1996_full_text_200_topics.csv"),sep = ""), row.names = F)
+
+```
+
+## Additional quantitative analysis
+### (1) Plot the novelty and relevance values of known breakthrough patents
+```{r, eval=F, echo=T}
+library('data.table') 
+library("ggplot2")
+
+slope.dt.1 = fread(paste(root.direct,c("slope_1977-1996_full_text_200_topics.csv"),sep = "")) #import dataset created in section 3.3.
+
+pat.id = 4086102 #a breakthrough patent from Nemet & Husmann (2012)   
+patent.distance.1 = distance.function(as.numeric(silicon.pv.pats[id==pat.id]$granted_year))  #distance.function created in section 3.2.
+
+{nov.1 = ggplot(patent.distance.1[id==pat.id], aes(x=ending_centroid_yr, y=novelty*100)) + geom_point(shape=16) + geom_smooth(method=lm, se=F) +
+    geom_line() + labs(y=c("N")) +   theme(axis.title.x=element_blank(),
+                           axis.text.x=element_blank(), axis.text.y=element_blank(),
+                           axis.ticks.x=element_blank())
+
+rel.1 = ggplot(patent.distance.1[id==pat.id], aes(x=ending_centroid_yr, y=relevance*100)) + geom_point(shape=16) + geom_smooth(method=lm, se=F) +
+    geom_line() +labs(y=c("R")) +   theme(axis.title.x=element_blank(),
+                           axis.text.x=element_blank(),axis.text.y=element_blank(),
+                           axis.ticks.x=element_blank())
+
+plot_grid(nov.1, rel.1,hjust = 0, vjust = 1,align = "h", ncol=1,nrow=2, scale = c(1., 1.))}
+```
+ ![Figure 2. Novelty and relevance plot of patent US4086102 with linear trend lines](C:/Users/sunxx731/Google Drive/Innovation Spillover/@Analytics/USPTO/Public code/N_R_plot_1.png)
+
+### (2) Plot two linear trends and a quadratic trend
+```{r, eval=F, echo=T}
+pat.id=4843451
+patent.distance = distance.function(as.numeric(silicon.pv.pats[id==pat.id]$granted_year))
+
+candidate = patent.distance[id==pat.id]
+candidate[time_trend<=15,horizon:="one"]
+candidate[time_trend>15,horizon:="two"]
+
+# novelty
+candidate[horizon=="one",linear.novel.fitted:=lm(novelty ~ time_trend, candidate[horizon=="one"])$fitted.values]
+candidate[horizon=="two",linear.novel.fitted:=lm(novelty ~ time_trend, candidate[horizon=="two"])$fitted.values]
+candidate[,poly.novel.fitted:=lm(novelty ~ poly(time_trend,2), candidate)$fitted.values]
+summary(lm(100*novelty ~ poly(time_trend,2, raw = TRUE), candidate))
+
+coefs = coefficients(lm(100*novelty ~ poly(time_trend,2, raw = TRUE), candidate))
+-coefs[2]/(2*coefs[3])
+
+# relevance
+candidate[horizon=="one",linear.rel.fitted:=lm(relevance ~ time_trend, candidate[horizon=="one"])$fitted.values]
+candidate[horizon=="two",linear.rel.fitted:=lm(relevance ~ time_trend, candidate[horizon=="two"])$fitted.values]
+candidate[,poly.rel.fitted:=lm(relevance ~ poly(time_trend,2), candidate)$fitted.values]
+summary(lm(100*relevance ~ poly(time_trend,2, raw = T), candidate))
+
+coefs = coefficients(lm(100*relevance ~ poly(time_trend,2, raw = TRUE), candidate))
+-coefs[2]/(2*coefs[3])
+
+{nov = ggplot(candidate, aes(x=ending_centroid_yr, y=novelty*100)) + 
+    geom_point(shape=16) + 
+    geom_line(aes(x=ending_centroid_yr, y=linear.novel.fitted*100, color=horizon),size=1, linetype="solid")+
+    geom_line(aes(x=ending_centroid_yr, y=poly.novel.fitted*100),size=1, color = "black")+
+    labs(x=c("Time trend"),y=c("Novelty"))  + scale_color_manual(values=c("blue", "blue")) +
+    theme_grey() + theme(legend.position="none") 
+  
+  #plot relevance
+  rel =  ggplot(candidate, aes(x=ending_centroid_yr, y=relevance*100)) + 
+    geom_point(shape=16) + 
+    geom_line(aes(x=ending_centroid_yr, y=linear.rel.fitted*100, color=horizon),size=1)+
+    geom_line(aes(x=ending_centroid_yr, y=poly.rel.fitted*100),size=1, color = "black")+
+    labs(x=c("Time trend"),y=c("Relevance"))  + scale_color_manual(values=c("blue", "blue")) +
+    theme_grey() + theme(legend.position="none")
+  
+  plot_grid(nov, rel, hjust = 0, vjust = 1,align = "h", ncol=2, scale = c(1., 1.))
+  
+}
+```
+ ![Figure 3. Novelty and relevance plot of patent US4843451 with linear and quadratic trend lines](C:/Users/sunxx731/Google Drive/Innovation Spillover/@Analytics/USPTO/Public code/N_R_plot_2.png)

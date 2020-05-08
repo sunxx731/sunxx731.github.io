@@ -8,6 +8,8 @@ navbar:
       href: research.html
     - text: "Teaching"
       href: teaching.html
+    - text: "Novelty & Relevance Metrics"
+      href: N-R_tutorial.html
     - text: "Contact"
       href: contact.html
   right:
