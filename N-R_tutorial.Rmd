@@ -188,7 +188,7 @@ result <- FindTopicsNumber(
  
 FindTopicsNumber_plot(result) #inspect graphic output to determine the optimal number of topics
 ```
- ![Figure 1. Cross validation on the number of topics](C:/Users/sunxx731/Google Drive/Innovation Spillover/@Analytics/USPTO/Public code/topic_model_CV.png)
+ ![Figure 1. Cross validation on the number of topics](C:/Users/sunbi/OneDrive/Documents/GitHub/sunxx731.github.io/topic_model_CV.png)
  
  
 ### 2.3. Build LDA topic model and calculate topic distribution matrix
@@ -402,7 +402,7 @@ rel.1 = ggplot(patent.distance.1[id==pat.id], aes(x=ending_centroid_yr, y=releva
 
 plot_grid(nov.1, rel.1,hjust = 0, vjust = 1,align = "h", ncol=1,nrow=2, scale = c(1., 1.))}
 ```
- ![Figure 2. Novelty and relevance plot of patent US4086102 with linear trend lines](C:/Users/sunxx731/Google Drive/Innovation Spillover/@Analytics/USPTO/Public code/N_R_plot_1.png)
+ ![Figure 2. Novelty and relevance plot of patent US4086102 with linear trend lines](C:/Users/sunbi/OneDrive/Documents/GitHub/sunxx731.github.io/N_R_plot_1.png)
 
 ### (2) Plot two linear trends and a quadratic trend
 ```{r, eval=F, echo=T}
@@ -450,4 +450,4 @@ coefs = coefficients(lm(100*relevance ~ poly(time_trend,2, raw = TRUE), candidat
   
 }
 ```
- ![Figure 3. Novelty and relevance plot of patent US4843451 with linear and quadratic trend lines](C:/Users/sunxx731/Google Drive/Innovation Spillover/@Analytics/USPTO/Public code/N_R_plot_2.png)
+ ![Figure 3. Novelty and relevance plot of patent US4843451 with linear and quadratic trend lines](C:/Users/sunbi/OneDrive/Documents/GitHub/sunxx731.github.io/N_R_plot_2.png)

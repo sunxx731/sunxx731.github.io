@@ -549,7 +549,7 @@ result &lt;- FindTopicsNumber(
  
 FindTopicsNumber_plot(result) #inspect graphic output to determine the optimal number of topics</code></pre>
 <div class="figure">
-<img src="C:/Users/sunxx731/Google%20Drive/Innovation%20Spillover/@Analytics/USPTO/Public%20code/topic_model_CV.png" alt="Figure 1. Cross validation on the number of topics" />
+<img src="topic_model_CV.png" alt="Figure 1. Cross validation on the number of topics" />
 <p class="caption">Figure 1. Cross validation on the number of topics</p>
 </div>
 </div>
@@ -660,7 +660,7 @@ rel.1 = ggplot(patent.distance.1[id==pat.id], aes(x=ending_centroid_yr, y=releva
 
 plot_grid(nov.1, rel.1,hjust = 0, vjust = 1,align = &quot;h&quot;, ncol=1,nrow=2, scale = c(1., 1.))}</code></pre>
 <div class="figure">
-<img src="C:/Users/sunxx731/Google%20Drive/Innovation%20Spillover/@Analytics/USPTO/Public%20code/N_R_plot_1.png" alt="Figure 2. Novelty and relevance plot of patent US4086102 with linear trend lines" />
+<img src="N_R_plot_1.png" alt="Figure 2. Novelty and relevance plot of patent US4086102 with linear trend lines" />
 <p class="caption">Figure 2. Novelty and relevance plot of patent US4086102 with linear trend lines</p>
 </div>
 </div>
@@ -710,7 +710,7 @@ coefs = coefficients(lm(100*relevance ~ poly(time_trend,2, raw = TRUE), candidat
   
 }</code></pre>
 <div class="figure">
-<img src="C:/Users/sunxx731/Google%20Drive/Innovation%20Spillover/@Analytics/USPTO/Public%20code/N_R_plot_2.png" alt="Figure 3. Novelty and relevance plot of patent US4843451 with linear and quadratic trend lines" />
+<img src="N_R_plot_2.png" alt="Figure 3. Novelty and relevance plot of patent US4843451 with linear and quadratic trend lines" />
 <p class="caption">Figure 3. Novelty and relevance plot of patent US4843451 with linear and quadratic trend lines</p>
 </div>
 </div>
