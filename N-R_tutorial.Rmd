@@ -11,7 +11,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 **Author**: Bixuan Sun, Ph.D. (sunxx731@umn.edu)
 
-**Full paper**: Sun, Bixuan; Kolesnikov, Sergey; Goldstein, Anna; Chan, Gabriel. "A Dynamic Approach for Identifying Technological Breakthroughs with an Application in Solar Photovoltaics"
+**Full paper**: Sun, B., Kolesnikov, S., Goldstein, A., & Chan, G. (2021). A dynamic approach for identifying technological breakthroughs with an application in solar photovoltaics. Technological Forecasting and Social Change, 165, 120534.
 
 ## Overview
 
@@ -188,7 +188,7 @@ result <- FindTopicsNumber(
  
 FindTopicsNumber_plot(result) #inspect graphic output to determine the optimal number of topics
 ```
- ![Figure 1. Cross validation on the number of topics](C:/Users/sunbi/OneDrive/Documents/GitHub/sunxx731.github.io/topic_model_CV.png)
+ ![Figure 1. Cross validation on the number of topics](G:/My Drive/Innovation Spillover/@Analytics/USPTO/Public code/topic_model_CV.png)
  
  
 ### 2.3. Build LDA topic model and calculate topic distribution matrix
@@ -218,7 +218,7 @@ save(lda.matrix, file = paste(root.direct,c("topic_dist_si_pv_full_text_200_topi
 To calculate novelty and relevance metrics, we first obtain the average topic distribution for each year (annual field centroids), then write a function that calculates the 20-year novelty and relevance metrics for patents filed in a given year, finally create a dataset that includes the changes/slopes of novelty and relevance values, initial novelty and relevance values of each patent in the study period.
 
 ### 3.1. Annual field centroids
-```{r, eval=F, echo=F}
+```{r, eval=F, echo=T}
 rm(list=ls())
 library('data.table') 
 library('ggplot2')
@@ -260,7 +260,8 @@ write.csv(centroids, file = paste(root.direct,c("centriods_si_pv_full_text_200_t
 
 ### 3.2. Calculate novelty and relevance metrics 
 Write a function *distance.function(n)* where *n* is the granted year of the patents to be evaluated.
-```{r, eval=F, echo=F}
+
+```{r, eval=F, echo=T}
 centroids = fread(paste(root.direct,c("centriods_si_pv_full_text_200_topics.csv"),sep = ""))
 
 distance.function = function(j){
@@ -402,7 +403,7 @@ rel.1 = ggplot(patent.distance.1[id==pat.id], aes(x=ending_centroid_yr, y=releva
 
 plot_grid(nov.1, rel.1,hjust = 0, vjust = 1,align = "h", ncol=1,nrow=2, scale = c(1., 1.))}
 ```
- ![Figure 2. Novelty and relevance plot of patent US4086102 with linear trend lines](C:/Users/sunbi/OneDrive/Documents/GitHub/sunxx731.github.io/N_R_plot_1.png)
+ ![Figure 2. Novelty and relevance plot of patent US4086102 with linear trend lines](G:/My Drive/Innovation Spillover/@Analytics/USPTO/Public code/N_R_plot_1.png)
 
 ### (2) Plot two linear trends and a quadratic trend
 ```{r, eval=F, echo=T}
@@ -450,4 +451,4 @@ coefs = coefficients(lm(100*relevance ~ poly(time_trend,2, raw = TRUE), candidat
   
 }
 ```
- ![Figure 3. Novelty and relevance plot of patent US4843451 with linear and quadratic trend lines](C:/Users/sunbi/OneDrive/Documents/GitHub/sunxx731.github.io/N_R_plot_2.png)
+ ![Figure 3. Novelty and relevance plot of patent US4843451 with linear and quadratic trend lines](G:/My Drive/Innovation Spillover/@Analytics/USPTO/Public code/N_R_plot_2.png)

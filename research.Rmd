@@ -3,6 +3,8 @@
 ---
 
 ## Publications
+1. **Sun, B.**, Kolesnikov, S., Goldstein, A., & Chan, G. (2021). A dynamic approach for identifying technological breakthroughs with an application in solar photovoltaics. Technological Forecasting and Social Change, 165, [120534](https://www.sciencedirect.com/science/article/abs/pii/S0040162520313603?via%3Dihub).
+
 1. Konidena, R., **Sun, B.**, & Bhandari, V. (2020). Missing discourse on microgrids-The importance of transmission and distribution infrastructure. The Electricity Journal, 33(4), [106727](https://www.sciencedirect.com/science/article/pii/S1040619020300191).
 
 1. Glewwe, P., Shen, R., **Sun, B.**, Wisniewski, S. (2020) Chapter 27 - Teachers in developing countries. The Economics of Education (Second Edition) A Comprehensive Overview. Pages 371-389. [ISBN: 9780128153918](https://www.sciencedirect.com/science/article/pii/B9780128153918000276).
@@ -20,15 +22,11 @@
 ---
 
 ## Working papers
-1. **Sun, Bixuan**; Kolesnikov, Sergey; Goldstein, Anna; Chan, Gabriel. "A Dynamic Approach for Identifying Technological Breakthroughs with an Application in Solar Photovoltaics". (submitted for publication)
+1. Glewwe, Paul; Wisniewski, Suzanne; **Sun, Bixuan**. "Teachers in Developing Countries". (In press)
 
 1. Eryilmaz, Derya; **Sun, Bixuan**. "Impacts of electric vehicle adoption on utility short and long term planning"
 
 1. **Sun, Bixuan**. "Heterogeneous Impacts of Residential Solar Rebate Programs in the U.S.: A Machine Learning Perspective". 
-
-1. Glewwe, Paul; Wisniewski, Suzanne; **Sun, Bixuan**. "Teachers in Developing Countries". 
-
-1. **Sun, Bixuan**; Chan, Gabriel. "A Network-Based Automated Approach for Identifying Technological Spillovers with an Application in Solar Photovoltaics".
 
 1. **Sun, Bixuan**; [Miller, Steve](stevejmiller.com). "Market power and the transition to clean energy".
 
